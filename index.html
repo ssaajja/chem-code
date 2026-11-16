@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#071a33">
+<title>شفرة الكيمياء | CHEM CODE</title>
+
+<style>
+:root {
+  --bg: #071a33;
+  --panel: #102944;
+  --panel2: #153653;
+  --cyan: #51d9ed;
+  --blue: #249cc5;
+  --white: #f4fbff;
+  --muted: #b6c9d9;
+  --green: #65dfad;
+  --red: #ff8792;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Tahoma, Arial, sans-serif;
+  background:
+    radial-gradient(circle at 15% 15%, #123d5b 0, transparent 35%),
+    radial-gradient(circle at 85% 80%, #10344f 0, transparent 35%),
+    var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+}
+button { font-family: inherit; }
+header {
+  padding: 22px 7%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ffffff18;
+}
+.logo { font-size: 20px; font-weight: bold; color: var(--cyan); }
+.logo small { display: block; font-size: 10px; letter-spacing: 3px; color: var(--muted); margin-top: 5px; }
+.header-tag {
+  color: var(--muted);
+  font-size: 12px;
+  border: 1px solid #ffffff25;
+  padding: 8px 13px;
+  border-radius: 30px;
+}
+main { width: min(900px, 92%); margin: 35px auto 60px; }
+.screen { display: none; animation: appear .35s ease; }
+.screen.active { display: block; }
+@keyframes appear {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero {
+  text-align: center;
+  padding: 50px 20px 35px;
+}
+.atom {
+  width: 100px; height: 100px;
+  border: 2px solid var(--cyan);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  margin: auto auto 25px;
+  font-size: 48px;
+  color: var(--cyan);
+  box-shadow: 0 0 35px #51d9ed35;
+}
+.eyebrow { color: var(--cyan); font-size: 13px; letter-spacing: 2px; }
+h1 { font-size: clamp(30px, 6vw, 49px); margin: 15px 0; }
+h1 span { color: var(--cyan); }
+.subtitle { color: var(--muted); line-height: 2; max-width: 600px; margin: auto; }
+.panel {
+  background: linear-gradient(145deg, #102944, #0d233b);
+  border: 1px solid #ffffff18;
+  border-radius: 22px;
+  padding: 27px;
+  margin: 20px 0;
+  box-shadow: 0 15px 45px #00000020;
+}
+.section-title { color: var(--cyan); margin-top: 0; }
+.steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.step-card {
+  background: #ffffff08;
+  border: 1px solid #ffffff14;
+  border-radius: 14px;
+  padding: 17px 12px;
+  text-align: center;
+}
+.step-card strong { display: block; color: var(--cyan); font-size: 22px; margin-bottom: 8px; }
+.step-card p { color: var(--muted); font-size: 12px; line-height: 1.8; margin: 0; }
+.btn {
+  border: 0;
+  background: linear-gradient(100deg, #25a9d1, #55d9e8);
+  color: #061a2d;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 15px 27px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: .2s;
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.btn.secondary {
+  color: var(--white);
+  background: #ffffff12;
+  border: 1px solid #ffffff25;
+}
+.center { text-align: center; }
+.progress-wrap { margin: 20px 0 28px; }
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.progress {
+  height: 9px;
+  background: #ffffff18;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+  border-radius: 20px;
+  transition: width .4s;
+}
+.stage-label { color: var(--cyan); font-size: 13px; }
+.question { font-size: 23px; line-height: 1.8; margin: 15px 0 22px; }
+.options { display: grid; gap: 12px; }
+.option {
+  text-align: right;
+  padding: 17px;
+  background: #ffffff09;
+  border: 1px solid #ffffff20;
+  border-radius: 12px;
+  color: var(--white);
+  cursor: pointer;
+  font-size: 16px;
+  transition: .2s;
+}
+.option:hover:not(:disabled) { border-color: var(--cyan); background: #51d9ed12; }
+.option:disabled { cursor: default; opacity: 1; }
+.option.correct { border-color: var(--green); background: #65dfad18; color: var(--green); }
+.option.wrong { border-color: var(--red); background: #ff879218; color: var(--red); }
+.feedback {
+  display: none;
+  margin-top: 20px;
+  padding: 17px;
+  border-radius: 12px;
+  line-height: 1.9;
+}
+.feedback.show { display: block; }
+.feedback.good { background: #65dfad15; border: 1px solid #65dfad55; }
+.feedback.bad { background: #ff879215; border: 1px solid #ff879255; }
+.feedback strong { display: block; margin-bottom: 5px; }
+.next-wrap { text-align: left; margin-top: 20px; }
+.molecule {
+  font-size: clamp(22px, 5vw, 32px);
+  direction: ltr;
+  text-align: center;
+  color: var(--cyan);
+  background: #ffffff08;
+  padding: 22px 8px;
+  border-radius: 14px;
+  margin: 20px 0;
+  font-weight: bold;
+}
+.certificate {
+  border: 2px solid var(--cyan);
+  border-radius: 18px;
+  padding: 35px 20px;
+  text-align: center;
+  background: linear-gradient(145deg, #102944, #0a2038);
+}
+.certificate h2 { color: var(--cyan); font-size: 30px; }
+.certificate .award { font-size: 48px; margin: 10px; }
+.certificate-name { font-size: 25px; color: var(--cyan); margin: 20px 0; }
+input {
+  width: 100%;
+  background: #ffffff0d;
+  border: 1px solid #ffffff30;
+  color: white;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: inherit;
+  margin: 10px 0 18px;
+}
+footer {
+  text-align: center;
+  padding: 25px 12px;
+  border-top: 1px solid #ffffff18;
+  color: #91a9bc;
+  font-size: 12px;
+  line-height: 2;
+}
+footer strong { color: var(--cyan); }
+@media(max-width:600px) {
+  header { padding: 17px 5%; }
+  .header-tag { font-size: 10px; }
+  .hero { padding-top: 35px; }
+  .panel { padding: 20px; }
+  .steps { grid-template-columns: 1fr; }
+  .step-card { display: flex; align-items: center; gap: 14px; text-align: right; }
+  .step-card strong { margin: 0; min-width: 35px; }
+  .question { font-size: 19px; }
+}
+@media print {
+  body { background: white; color: #102944; }
+  header, footer, .no-print { display: none !important; }
+  main { width: 100%; margin: 0; }
+  .screen { display: none !important; }
+  #certificateScreen { display: block !important; }
+  .certificate { color: #102944; background: white; border: 3px double #168eaf; }
+  .certificate h2, .certificate-name { color: #168eaf; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">شفرة الكيمياء <small>CHEM CODE</small></div>
+  <div class="header-tag">مختبر الاكتشافات الكيميائية</div>
+</header>
+
+<main>
+
+<!-- الصفحة الرئيسية -->
+<section id="homeScreen" class="screen active">
+  <div class="hero">
+    <div class="atom">⚛</div>
+    <div class="eyebrow">WELCOME TO THE CHEMISTRY LAB</div>
+    <h1>شفرة <span>الكيمياء</span></h1>
+    <p class="subtitle">
+      من الغموض إلى الاكتشاف... أمامك سلسلة من الألغاز الكيميائية،
+      اختبري معلوماتك واجتازي المراحل لاكتشاف الشفرة النهائية!
+    </p>
+  </div>
+
+  <div class="panel">
+    <h3 class="section-title">ما فكرة المشروع؟</h3>
+    <p class="subtitle">
+      تجربة تعليمية تفاعلية تحوّل مفاهيم الكيمياء إلى تحديات ممتعة.
+      ستنتقلين بين خمس مراحل، وفي كل مرحلة سؤال يحتاج إلى التفكير والتركيز.
+    </p>
+  </div>
+
+  <div class="panel">
+    <h3 class="section-title">رحلة المختبر</h3>
+    <div class="steps">
+      <div class="step-card"><strong>01</strong><p>التعرّف على العناصر ورموزها</p></div>
+      <div class="step-card"><strong>02</strong><p>اكتشاف المركبات الكيميائية</p></div>
+      <div class="step-card"><strong>03</strong><p>تمييز الأحماض ودرجة الحموضة</p></div>
+      <div class="step-card"><strong>04</strong><p>فهم المعادلات الكيميائية</p></div>
+      <div class="step-card"><strong>05</strong><p>تمييز التغيرات الكيميائية</p></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3 class="section-title">تعليمات المختبر</h3>
+    <p class="subtitle">
+      • اقرئي السؤال جيدًا قبل اختيار الإجابة.<br>
+      • اختاري إجابة واحدة لكل مرحلة.<br>
+      • ستحصلين على تصحيح فوري مع تفسير علمي.<br>
+      • أكملي المراحل الخمس للحصول على شهادة إتمام.
+    </p>
+  </div>
+
+  <div class="center">
+    <button class="btn" onclick="startGame()">ابدئي التحدي ←</button>
+  </div>
+</section>
+
+<!-- شاشة الأسئلة -->
+<section id="gameScreen" class="screen">
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span id="stageCounter">المرحلة 1 من 5</span>
+      <span id="progressText">0%</span>
+    </div>
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+  </div>
+
+  <div class="panel">
+    <div class="stage-label" id="stageLabel">المرحلة الأولى | العناصر</div>
+    <h2 class="question" id="questionText"></h2>
+    <div class="molecule" id="questionVisual" style="display:none"></div>
+    <div class="options" id="optionsArea"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div class="next-wrap">
+      <button class="btn" id="nextButton" style="display:none" onclick="nextStage()">المرحلة التالية ←</button>
+    </div>
+  </div>
+  <div class="center">
+    <button class="btn secondary" onclick="goHome()">العودة للرئيسية</button>
+  </div>
+</section>
+
+<!-- شاشة النجاح -->
+<section id="successScreen" class="screen">
+  <div class="hero">
+    <div class="atom">✓</div>
+    <div class="eyebrow">MISSION COMPLETED</div>
+    <h1>أحسنتِ! <span>تم اجتياز التحدي</span></h1>
+    <p class="subtitle">لقد أكملتِ جميع مراحل شفرة الكيمياء بنجاح.</p>
+  </div>
+  <div class="panel center">
+    <h2 class="section-title">نتيجة رحلتك</h2>
+    <div style="font-size:40px;color:var(--cyan)" id="finalScore">5 / 5</div>
+    <p class="subtitle">إجابات صحيحة من أصل خمس مراحل</p>
+    <button class="btn" onclick="showCertificate()">احصلي على شهادة الإتمام</button>
+  </div>
+  <div class="panel">
+    <h3 class="section-title">رسالة تقدير</h3>
+    <p class="subtitle">
+      إلى معلمتنا الفاضلة، شكرًا لعطائك وجهودك في تبسيط العلم
+      وإلهامنا للاستكشاف والتعلّم. كان لهذا التوجيه أثر في جعل
+      المعرفة تجربة ممتعة ومليئة بالاكتشاف.
+    </p>
+  </div>
+</section>
+
+<!-- الشهادة -->
+<section id="certificateScreen" class="screen">
+  <div class="certificate">
+    <div class="award">🏅</div>
+    <div class="eyebrow">CHEM CODE CERTIFICATE</div>
+    <h2>شهادة إتمام</h2>
+    <p>تُمنح هذه الشهادة إلى</p>
+    <input id="studentName" class="no-print" placeholder="اكتبي اسمك هنا" maxlength="50">
+    <div class="certificate-name" id="certificateName">المستكشفة الكيميائية</div>
+    <p>تقديرًا لإتمامها تحدي شفرة الكيمياء واجتياز المراحل الخمس بنجاح.</p>
+    <p style="color:#168eaf;font-weight:bold;margin-top:25px">من الغموض إلى الاكتشاف</p>
+    <p style="font-size:12px;margin-top:25px">إعداد المشروع: سجى فواز الفقيري</p>
+  </div>
+  <div class="center no-print" style="margin-top:20px">
+    <button class="btn" onclick="window.print()">طباعة الشهادة</button>
+    <button class="btn secondary" onclick="goHome()">الرئيسية</button>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <strong>CHEM CODE | شفرة الكيمياء</strong><br>
+  إعداد وتصميم: سجى فواز الفقيري<br>
+  جميع الحقوق محفوظة © 2026
+</footer>
+
+<script>
+const stages = [
+  {
+    label: "المرحلة الأولى | العناصر الكيميائية",
+    question: "ما الرمز الكيميائي لعنصر الأكسجين؟",
+    visual: "O₂",
+    options: ["O", "Ox", "Og", "C"],
+    answer: 0,
+    explanation: "الإجابة الصحيحة هي O. يرمز الحرف O إلى عنصر الأكسجين، أما O₂ فيمثل جزيء الأكسجين المكوّن من ذرتين."
+  },
+  {
+    label: "المرحلة الثانية | المركبات الكيميائية",
+    question: "ما الصيغة الكيميائية الصحيحة لكلوريد الصوديوم (ملح الطعام)؟",
+    visual: "Na + Cl",
+    options: ["H₂O", "NaCl", "CO₂", "O₂"],
+    answer: 1,
+    explanation: "الإجابة الصحيحة هي NaCl. يتكون كلوريد الصوديوم من أيونات الصوديوم وأيونات الكلوريد."
+  },
+  {
+    label: "المرحلة الثالثة | الأحماض والقواعد",
+    question: "أي المواد التالية تُعد مادة حمضية، ويكون الرقم الهيدروجيني لها أقل من 7؟",
+    visual: "pH < 7",
+    options: ["الماء النقي", "محلول الصابون", "عصير الليمون", "محلول قلوي"],
+    answer: 2,
+    explanation: "الإجابة الصحيحة هي عصير الليمون؛ لأنه يحتوي على أحماض، وتكون قيمة pH للمواد الحمضية أقل من 7."
+  },
+  {
+    label: "المرحلة الرابعة | المعادلات الكيميائية",
+    question: "أي المعادلات التالية موزونة بشكل صحيح لتكوين الماء من الهيدروجين والأكسجين؟",
+    visual: "2H₂ + O₂ → 2H₂O",
+    options: [
+      "H₂ + O₂ → H₂O",
+      "2H₂ + O₂ → 2H₂O",
+      "H₂ + 2O₂ → H₂O",
+      "2H₂ + 2O₂ → H₂O"
+    ],
+    answer: 1,
+    explanation: "الإجابة الصحيحة هي 2H₂ + O₂ → 2H₂O. يوجد أربع ذرات هيدروجين وذرتا أكسجين في طرفي المعادلة، ولذلك فهي موزونة."
+  },
+  {
+    label: "المرحلة الخامسة | التغيرات الكيميائية",
+    question: "صدأ الحديد الذي يتكوّن عند تعرض الحديد للأكسجين والرطوبة يُعد مثالًا على:",
+    visual: "Fe → صدأ الحديد",
+    options: [
+      "تغير فيزيائي",
+      "تغير في الحالة فقط",
+      "تغير كيميائي",
+      "انصهار"
+    ],
+    answer: 2,
+    explanation: "الإجابة الصحيحة هي تغير كيميائي؛ لأن الحديد يتفاعل مع الأكسجين والرطوبة وتتكون مادة جديدة هي الصدأ."
+  }
+];
+
+let currentStage = 0;
+let score = 0;
+let answered = false;
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+function startGame() {
+  currentStage = 0;
+  score = 0;
+  loadStage();
+  showScreen("gameScreen");
+}
+
+function loadStage() {
+  answered = false;
+  const s = stages[currentStage];
+
+  document.getElementById("stageCounter").textContent =
+    `المرحلة ${currentStage + 1} من ${stages.length}`;
+
+  const percent = Math.round((currentStage / stages.length) * 100);
+  document.getElementById("progressText").textContent = percent + "%";
+  document.getElementById("progressBar").style.width = percent + "%";
+
+  document.getElementById("stageLabel").textContent = s.label;
+  document.getElementById("questionText").textContent = s.question;
+
+  const visual = document.getElementById("questionVisual");
+  visual.textContent = s.visual;
+  visual.style.display = "block";
+
+  const area = document.getElementById("optionsArea");
+  area.innerHTML = "";
+
+  s.options.forEach((option, index) => {
+    const button = document.createElement("button");
+    button.className = "option";
+    button.textContent = option;
+    button.onclick = () => checkAnswer(index);
+    area.appendChild(button);
+  });
+
+  const feedback = document.getElementById("feedback");
+  feedback.className = "feedback";
+  feedback.innerHTML = "";
+
+  const next = document.getElementById("nextButton");
+  next.style.display = "none";
+  next.textContent = currentStage === stages.length - 1
+    ? "إنهاء التحدي ✓"
+    : "المرحلة التالية ←";
+}
+
+function checkAnswer(selected) {
+  if (answered) return;
+  answered = true;
+
+  const s = stages[currentStage];
+  const buttons = document.querySelectorAll(".option");
+  buttons.forEach((button, index) => {
+    button.disabled = true;
+    if (index === s.answer) button.classList.add("correct");
+    if (index === selected && selected !== s.answer) button.classList.add("wrong");
+  });
+
+  const feedback = document.getElementById("feedback");
+
+  if (selected === s.answer) {
+    score++;
+    feedback.className = "feedback show good";
+    feedback.innerHTML = "<strong>✓ إجابة صحيحة!</strong>" + s.explanation;
+  } else {
+    feedback.className = "feedback show bad";
+    feedback.innerHTML = "<strong>✕ ليست الإجابة الصحيحة.</strong>" +
+      s.explanation;
+  }
+
+  document.getElementById("nextButton").style.display = "inline-block";
+}
+
+function nextStage() {
+  if (!answered) return;
+
+  currentStage++;
+
+  if (currentStage < stages.length) {
+    loadStage();
+  } else {
+    document.getElementById("progressBar").style.width = "100%";
+    document.getElementById("progressText").textContent = "100%";
+    document.getElementById("finalScore").textContent = score + " / 5";
+    showScreen("successScreen");
+  }
+}
+
+function showCertificate() {
+  const input = document.getElementById("studentName");
+  const name = input.value.trim();
+  document.getElementById("certificateName").textContent =
+    name || "المستكشفة الكيميائية";
+  showScreen("certificateScreen");
+}
+
+document.getElementById("studentName").addEventListener("input", function() {
+  document.getElementById("certificateName").textContent =
+    this.value.trim() || "المستكشفة الكيميائية";
+});
+
+function goHome() {
+  showScreen("homeScreen");
+}
+</script>
+</body>
+</html>
